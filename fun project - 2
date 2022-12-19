@@ -1,0 +1,53 @@
+from tkinter import *
+from tkinter import filedialog as fd
+from pywhatkit import *
+from threading import *
+
+m = Tk()
+m.title("text converter : ")
+m.geometry('640x250')
+filep = " "
+
+
+def select_file():
+    global filep
+    filep = fd.askopenfilename(title="select file", filetypes=(('Text Files', '*.txt'), ('All Files', '*.*')))
+    d.config(state='normal')
+    d.delete(0, END)
+    d.insert(0, filep)
+    d.config(state='disabled')
+
+
+def convert():
+    global filep
+    if filep != '':
+        btn.config(state='disabled')
+        cbtn.config(text='please wait', state='disabled')
+        lbl.config(text='writing...', fg='black')
+        pngfname = filep.replace('.txt', '.png')
+        tf = open(filep, 'r', encoding='utf8')
+        text = tf.read()
+        text_to_handwriting(string=text, save_to=pngfname, rgb=(3, 22, 145))
+        lbl.config(text='File is ready', fg='green')
+        btn.config(state='normal')
+        cbtn.config(text='submit', state='normal')
+
+
+def do():
+    t1 = Thread(target=convert)
+    t1.daemon = True
+    t1.start()
+
+
+d = Entry(m, width=25, font=('', 20), state='disabled', bg="yellow")
+d.grid(row=0, column=0, padx=(20, 10), pady=20)
+
+btn = Button(m, text="select file", font=(" ", 14), command=select_file)
+btn.grid(row=0, column=1, padx=(20, 10), pady=20)
+
+cbtn = Button(m, text="submit", font=(" ", 14), command=do)
+cbtn.grid(row=1, column=1, padx=20, pady=10)
+
+lbl = Label(m, text="vethan", font=('', 16))
+lbl.grid(row=2, column=0, padx=20, pady=(10, 20), columnspan=2, sticky=W)
+m.mainloop()
